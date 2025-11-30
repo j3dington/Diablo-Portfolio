@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Josh's Art Portfolio</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Uncial+Antiqua&family=IM+Fell+DW+Pica&display=swap" rel="stylesheet">
+        <style>
+            body {
+                background-color: #1a1a1a;
+                background-image:
+                    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                font-family: 'Cinzel', serif;
+                color: #e0e0e0;
+                margin: 0;
+                padding: 0;
+                scroll-behavior: smooth;
+            }
+
+            h1 {
+                display: inline-block;
+                padding: 10px 20px;
+                background: rgba(212, 175, 55, 0.1);
+                border: 2px solid #d4af37;
+                border-radius: 6px;
+                margin: 5px;
+                transition: all 0.3s ease;
+            }
+
+             h1:hover {
+                cursor: default;
+                background: rgba(212, 175, 55, 0.3);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            }
+
+            .particles {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            .particle {
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background: rgba(255, 100, 0, 0.6);
+                border-radius: 50%;
+                box-shadow: 0 0 10px rgba(255, 100, 0, 0.8);
+                animation: float linear infinite;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translateY(-100px) translateX(0);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(100vh) translateX(var(--drift));
+                    opacity: 0;
+                }
+            }
+
+            .back-to-top {
+                position: fixed;
+                bottom: 40px;
+                right: 40px;
+                width: 50px;
+                height: 50px;
+                background: rgba(212, 175, 55, 0.9);
+                color: #1a1a1a;
+                border: 2px solid #d4af37;
+                border-radius: 50%;
+                font-size: 24px;
+                cursor: pointer;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            .back-to-top.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-top.hover {
+                background: #ffd700;
+                transform: translateY(-5px);
+                box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            }
+
+            .gallery-stats {
+                text-align: center;
+                color: #b0b0b0;
+                font-size: 0.9em;
+                margin: -20px 0 30px 0;
+                font-style: italic;
+            }
+
+            .filter-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                margin: 30px 0;
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                padding: 10px 25px;
+                background: rgba(212, 175, 55, 0.1);
+                color: #d4af37;
+                border: 2px solid #d4af37;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 1em;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                font-family: 'Cinzel', serif;
+            }
+
+            .filter-btn:hover {
+                background: rgba(212, 175, 55, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .filter-btn.active {
+                background: #d4af37;
+                color: #1a1a1a;
+            }
+
+            .gallery-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 30px;
+                max-width: 1400px;
+                margin: 40px auto;
+                padding: 0 20px;
+                animation: fadeIn 1.2s ease-out;
+            }
+
+            .art-item {
+                background-color: #2a2a2a;
+                border-radius: 10px;
+                overflow: hidden;
+                transition: transform 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+                position: relative;
+            }
+
+            .art-title-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+                padding: 20px;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 10;
+                pointer-events: none;
+            }
+
+            .art-item:hover .art-title-overlay {
+                opacity: 1;
+            }
+
+            .art-title-overlay h3 {
+                margin: 0;
+                color: #d4af37;
+                font-size: 1.2em;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            }
+
+            .art-item:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            }
+
+            .art-item img {
+                width: 100%;
+                height: 300px;
+                object-fit: cover;
+                display: block;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin: 0;
+            }
+
+            .art-item.hidden {
+                display: none;
+            }
+
+            .art-caption {
+                padding: 20px;
+                font-size: .9em;
+                color: #b0b0b0;
+                line-height: 1.5;
+                margin: 0;
+                font-family: 'Cinzel', serif;
+            }
+
+            .featured-section {
+                max-width: 1200px;
+                margin: 60px auto;
+                padding: 0 20px;
+            }
+
+            .featured-item {
+                background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+                margin-bottom: 40px;
+                
+            }
+
+            .featured-item img {
+                width: 100%;
+                height: 500px;
+                object-fit: cover;
+                cursor: pointer;
+                transition: transform 0.5s ease;
+            }
+
+            .featured-item img:hover {
+                transform: scale(1.05);
+            }
+
+            .featured-info {
+                padding: 30px;
+            }
+
+            .featured-info h3 {
+                color: #d4af37;
+                font-size: 2em;
+                margin-bottom: 15px;
+                font-family: 'Cinzel', serif;
+            }
+
+            .featured-info p {
+                color: #b0b0b0;
+                line-height: 1.8;
+                font-size: 1.1em;
+            }
+
+            .featured-badge {
+                display: inline-block;
+                background: rgba(212, 175, 55, 0.2);
+                color: #d4af37;
+                padding: 5px 15px;
+                border-radius: 15px;
+                font-size: 0.8em;
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            .parallax-section {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .skills-section {
+                max-width: 800px;
+                margin: 60px auto;
+                padding: 40px;
+                background: rgba(42, 42, 42, 0.5);
+                border-radius: 10px;
+                border: 1px solid rgba(212, 175, 55, 0.3);
+            }
+
+            .skill-item {
+                margin-bottom: 25px;
+            }
+
+            .skill-name {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                color: #d4af37;
+                font-weight: bold;
+            }
+
+            .skill-bar {
+                background: rgba(212, 255, 255, 0.1);
+                height: 10px;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .skill-progress {
+                height: 100%;
+                background: linear-gradient(90deg, #d4af37, #ffd700);
+                border-radius: 10px;
+                transition: width 1s ease;
+                box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            }
+
+            .lightbox {
+                display: none;
+                position: fixed;
+                z-index: 10000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.85);
+                justify-content: center;
+                align-items: center;
+            }
+
+            .lightbox.active {
+                display: flex;
+            }
+
+            .lightbox-content {
+                max-width: 90%;
+                max-height: 90%;
+                object-fit: contain;
+                animation: zoomIn 0.3s;
+            }
+
+            .lightbox-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(212, 175, 55, 0.3);
+                color: #d4af37;
+                border: 2px solid #d4af37;
+                font-size: 30px;
+                padding: 12px 20px;
+                cursor: pointer;
+                border-radius: 5px;
+                transition: all 0.3s ease;
+                z-index: 10001;
+            }
+
+            .lightbox-nav:hover {
+                background-color: rgba(212, 175, 55, 0.6);
+                transform: translateY(-50%) scale(1.1);
+            }
+
+            .lightbox-prev {
+                left: 30px;
+            }
+            
+            .lightbox-next {
+                right: 30px;
+            }
+
+            .loading-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #0d0d0d;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 99999;
+                transition: opacity 0.5s ease;
+            }
+
+            .loading-screen.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .loader {
+                width: 50px;
+                height: 50px;
+                border: 5px solid rgba(212, 175, 55, 0.3);
+                border-top-color: #d4af37;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+
+            .loading-text {
+                color: #d4af37;
+                font-size: 1.5em;
+                margin-top: 20px;
+                animation: pulse 1.5s ease-in-out infinite;
+            }
+
+            @keyframes pulse {
+                0%, 100% { opacity: 0.5; }
+                50% { opacity: 1; }
+            }
+
+
+            @keyframes zoomIn {
+                from { transform: scale(0.5); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            .close-lightbox {
+                position: absolute;
+                top: 30px;
+                right: 50px;
+                color: #d4af37;
+                font-size: 50px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: color 0.3s;
+            }
+
+            .close-lightbox:hover {
+                color: #ffd700;
+            }
+
+            .social-links {
+                margin-top: 20px;
+            }
+
+            .social-links a {
+                display: inline-block;
+                padding: 10px 20px;
+                background: rgba(212, 175, 55, 0.1);
+                border: 2px solid #d4af37;
+                border-radius: 6px;
+                margin: 5px;
+                transition: all 0.3s ease;
+            }
+
+            .social-links a:hover {
+                background: rgba(212, 175, 55, 0.3);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            }
+
+            #lightbox-caption {
+                background-color: #1a1a1a;
+                border-radius: 6px;
+                position: absolute;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: antiquewhite;
+                font-size: 1.2em;
+                text-align: center;
+                padding: 10px;
+                margin: auto;
+            }
+
+            .hero-banner {
+                width: 100%;
+                height: 1080px;
+                background-image: url(https://cdna.artstation.com/p/assets/images/images/094/077/582/large/joshua-edington-ytbanner.jpg?1764377380);
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .hero-banner::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 1;
+            }
+
+            .banner-content {
+                position: relative;
+                z-index: 2;
+                text-align: center;
+                color: antiquewhite;
+                animation: fadeInUp 1.2s ease-out
+            }
+
+            .banner-content h1 {
+                font-size: 4em;
+                margin: 0;
+                color: #d4af37;
+                text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.8);
+                letter-spacing: 3px;
+                font-family: 'Uncial Antiqua', cursive;
+            }
+
+            .tagline {
+                font-size: 1.5em;
+                margin: 10px 0 0 0;
+                color: #e0e0e0;
+                text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+            }
+            
+            h1:hover {
+                
+                cursor: default;
+            }
+
+            h2 {
+                text-align: center;
+                margin-top: 40px;
+                font-family: 'Cinzel', serif;
+                font-weight: 700;
+            }
+
+            p {
+                max-width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
+
+            nav {
+                background-color: #0d0d0d;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.411);
+                animation: fadeIn 0.8s ease-out;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+
+            nav a {
+                color:#d4af37;
+                text-decoration: none;
+                margin: 0 20px;
+                font-weight: bold;
+                font-size: 1.1em;
+                transition: all 0.3s ease;
+            }
+
+            nav a:hover {
+                color: #ffd700;
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            }
+
+            footer {
+                background-color: #0d0d0d;
+                text-align: center;
+                padding: 40px 20px;
+                margin-top: 60px auto;
+                border-top: 2px solid #d4af37;
+            }
+
+            footer p {
+                margin: 10px auto;
+                text-align: center;
+            }
+
+            footer a {
+                color: #d4af37;
+                text-decoration: none;
+                margin: 0 15px;
+                transition: color 0.3s ease;
+            }
+
+            footer a:hover {
+                color: #ffd700;
+            }
+
+            .fade-in-section {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            }
+
+            .fade-in-section.is-visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        </style>
+    </head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loading-text">Entering Dungeon...</div>
+    </div>
+    <div class="particles" id="particles"></div>
+    <header class="hero-banner">
+        <div class="banner-content">
+            <h1>JOSHUA EDINGTON</h1>
+            <p class="tagline">Concept Artist | Diablo Fan Art</p>
+        </div>
+    </header>
+    <nav>
+        <a href="#gallery">Gallery</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <section class="featured-section fade-in-section">
+        <h2>Featured Work</h2>
+        <div class="featured-item">
+            <span class="featured-badge">⭐ FEATURED</span>
+            <img src="https://cdnb.artstation.com/p/assets/images/images/074/721/783/large/joshua-edington-home-small.jpg?1712775027" alt="The Destruction of Thornhaven" onclick="openLightbox(this)">
+            <div class="featured-info">
+                <h3>The Destruction of Thornhaven</h3>
+                <p>This piece captures the moment of desperate combat against the demonic forces. Created using digital painting techniques, blending traditional fantasy art with the dark atmospheric style of the Diablo universe. This work represents months of study in environmental storytelling and dynamic character action.</p>
+            </div>
+        </div>
+    </section>
+    <p> In this world, set in a fantastical universe parallel to our own, we follow the journey of a character very closely tied to King Leoric. This is the concept art that brought it all to life.</p>
+    <h2 id="gallery">Gallery</h2>
+    <div class="gallery-stats">
+        <span id="artworkCount">4 Artworks</span> | Digital Concept Art
+    </div>
+
+<div class="filter-buttons">
+    <button class="filter-btn active" onclick="filterArt('all')">All</button>
+    <button class="filter-btn" onclick="filterArt('environment')">Environments</button>
+    <button class="filter-btn" onclick="filterArt('character')">Characters</button>
+    <button class="filter-btn" onclick="filterArt('scene')">Scenes</button>
+</div>
+
+<div class="gallery-grid">
+    <div class="art-item" data-category="scene">
+        <div class="art-title-overlay">
+            <h3>The Destruction of Thornhaven</h3>
+        </div>
+        <img src="https://cdnb.artstation.com/p/assets/images/images/074/721/783/large/joshua-edington-home-small.jpg?1712775027" alt="The Destruction of Thornhaven" onclick="openLightbox(this)">
+        <p class="art-caption">Our character slashes at Fallen Ones, defending his slain companion.</p>
+    </div>
+
+    <div class="art-item" data-category="environment">
+        <div class="art-title-overlay">
+            <h3>The Hollow</h3>
+        </div>
+        <img src="https://cdna.artstation.com/p/assets/images/images/072/947/678/large/joshua-edington-portfolio-piece-3.jpg?1708559630" alt="The Hollow" onclick="openLightbox(this)">
+        <p class="art-caption">We have stumbled upon a giant hollowed-out tree trunk, which has clearly been turned into some sort of refuge.</p>
+    </div>
+
+    <div class="art-item" data-category="scene">
+        <div class="art-title-overlay">
+            <h3>Embrace</h3>
+        </div>
+        <img src="https://cdna.artstation.com/p/assets/images/images/066/200/484/large/joshua-edington-leoric.jpg?1692294675" alt="Embrace" onclick="openLightbox(this)">
+        <p class="art-caption">King Leoric rests at the lap of his wife, who embraces him calmly and attempts to soothe his emotional pain.</p>
+    </div>
+
+    <div class="art-item" data-category="environment">
+        <div class="art-title-overlay">
+            <h3>Homecoming</h3>
+        </div>
+        <img src="https://cdnb.artstation.com/p/assets/images/images/094/076/149/large/joshua-edington-portfolio-piece-1.jpg?1764369606" alt="Homecoming" onclick="openLightbox(this)">
+        <p class="art-caption">Our hero comes home to a sight he never thought he would have to bear.</p>
+    </div>
+</div>
+
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="close-lightbox">&times;</span>
+    <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); previousImage()">❮</button>
+    <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); nextImage()">❯</button>
+    <img id="lightbox-img" class="lightbox-content" onclick="event.stopPropagation()">
+    <div id="lightbox-caption"></div>
+</div>
+    <h2 id="about" class="fade-in-section">About the Artist</h2>
+    <p class="fade-in-section">I started drawing and painting in middle school, right around the time I fell in love with Diablo II. I think that is why I love creating this style of environments and characters. This is my fan tribute to the Diablo series.</p>
+    <section class="skills-section fade-in-section">
+        <h2>Skills & Expertise</h2>
+        <div class="skill-item">
+            <div class="skill-name">
+                <span>Digital Painting</span>
+                <span>90%</span>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%" data-width="90%"></div>
+            </div>
+        </div>
+    
+        <div class="skill-item">
+            <div class="skill-name">
+                <span>Environment Art</span>
+                <span>65%</span>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%" data-width="65%"></div>
+            </div>
+        </div>
+    
+        <div class="skill-item">
+            <div class="skill-name">
+                <span>Character Art</span>
+                <span>40%</span>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%" data-width="40%"></div>
+            </div>
+        </div>
+    
+        <div class="skill-item">
+            <div class="skill-name">
+                <span>3D Modeling</span>
+                <span>15%</span>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%" data-width="15%"></div>
+            </div>
+        </div>
+    </section>
+    <h2 id="contact" class="fade-in-section">Contact</h2>
+    <p class="fade-in-section">Email: j3dington3@gmail.com</p>
+    <footer>
+        <p>&copy; 2025 Joshua Edington | Diablo Fan Art Portfolio</p>
+        <div class="social-links">
+            <a href="https://www.artstation.com/joshisanartist" target="_blank">ArtStation</a>
+            <a href="j3dington3@gmail.com">Email</a>
+        </div>
+    </footer>
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1500);
+        });
+
+        let currentImageIndex = 0;
+        let allImages = [];
+
+        window.addEventListener('load', function() {
+            allImages = Array.from(document.querySelectorAll('.art-item img'));
+        });
+
+        function openLightbox(img) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+
+            currentImageIndex = allImages.indexOf(img);
+
+            lightbox.classList.add('active');
+            lightboxImg.src = img.src;
+            caption.textContent = img.alt;
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % allImages.length;
+            const lightboxImg = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+
+            lightboxImg.src = allImages[currentImageIndex].src;
+            caption.textContent = allImages[currentImageIndex].alt;
+        }
+
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + allImages.length) %allImages.length;
+            const lightboxImg = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+
+            lightboxImg.src = allImages[currentImageIndex].src;
+            caption.textContent = allImages[currentImageIndex].alt;
+        }
+
+        document.addEventListener('keydown', function(e) {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                } else if (e.key === 'ArrowLeft') {
+                    previousImage();
+                }
+            } 
+        });
+
+        const faders = document.querySelectorAll('.fade-in-section');
+
+        const appearOptions = {
+            threshold: 0.3,
+            rootMargin: "0px 0px -100px 0px"
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('is-visible');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i =0; i <particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                particle.style.left = Math.random() * 100 + '%';
+
+                const duration = 10 + Math.random() * 15;
+                particle.style.animationDuration = duration + 's';
+
+                particle.style.animationDelay = Math.random() * 5 + 's';
+
+                particle.style.setProperty('--drift', (Math.random() - 0.5) * 100 + 'px');
+
+                const size = 2 + Math.random() * 3;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function filterArt(category) {
+            const items = document.querySelectorAll('.art-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            let visibleCount = 0;
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('artworkCount').textContent = visibleCount + 'Artwork' + (visibleCount !== 1 ? 's' : '');
+        }
+
+        const skillBars = document.querySelectorAll('.skill-progress');
+
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bar = entry.target;
+                    const width = bar.dataset.width;
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                    skillObserver.unobserve(bar);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        skillBars.forEach(bar => {
+            skillObserver.observe(bar);
+        });
+
+    </script>
+</body>
+</html>
